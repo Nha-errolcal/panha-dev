@@ -8,7 +8,6 @@ import {
     FolderKanban,
     MessageSquareQuote,
     Mail,
-    Settings,
 } from 'lucide-vue-next'
 
 const menuNavItem: InterfaceNavberItem[] = [
