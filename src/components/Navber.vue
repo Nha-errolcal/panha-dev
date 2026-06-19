@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, type ComponentPublicInstance } from 'vue'
 import { useRouter } from 'vue-router'
 import { gsap } from 'gsap'
 import { X, Menu } from 'lucide-vue-next'
@@ -17,8 +17,8 @@ const navRef = ref<HTMLElement | null>(null)
 const logoRef = ref<HTMLElement | null>(null)
 const itemRefs = ref<HTMLElement[]>([])
 
-function setItemRef(el: HTMLElement | null) {
-    if (el) itemRefs.value.push(el)
+function setItemRef(el: Element | ComponentPublicInstance | null) {
+    if (el instanceof HTMLElement) itemRefs.value.push(el)
 }
 
 function handleScroll() {
