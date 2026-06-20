@@ -27,6 +27,7 @@ function handleScroll() {
     isScrolled.value = window.scrollY > 20
 }
 
+
 const activeSection = ref('')
 const manualOverride = ref(false)
 let overrideTimer: ReturnType<typeof setTimeout> | undefined
