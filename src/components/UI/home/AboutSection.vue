@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import hero from '../../../assets/hero.png'
+import { useScrollReveal } from '../../../composables/useScrollReveal'
 
 const stats = [
     { num: '1+', label: 'Years Experience' },
@@ -7,20 +9,23 @@ const stats = [
     { num: '6', label: 'Tech Stacks' },
     { num: '∞', label: 'Laughs on Stage' },
 ]
+
+const sectionRef = ref<HTMLElement | null>(null)
+useScrollReveal(sectionRef)
 </script>
 
 <template>
-    <section id="about" class="about-section">
+    <section id="about" class="about-section" ref="sectionRef">
         <div class="section-inner">
-            <p class="section-eyebrow">Who I am</p>
-            <h2 class="section-title">Developer <span class="text-blue">&</span> Performer</h2>
-            <p class="section-sub">
+            <p class="section-eyebrow reveal">Who I am</p>
+            <h2 class="section-title reveal">Developer <span class="text-blue">&</span> Performer</h2>
+            <p class="section-sub reveal">
                 CS student at Western University Cambodia, intern at MoEYS, and Flutter dev with a published app.
             </p>
 
             <div class="about-grid">
                 <!-- Photo -->
-                <div class="about-img-col">
+                <div class="about-img-col reveal">
                     <div class="about-img-frame">
                         <img :src="hero" alt="Panha" class="about-img" />
                         <div class="about-img-glow" />
@@ -31,7 +36,7 @@ const stats = [
                 </div>
 
                 <!-- Text -->
-                <div class="about-text-col">
+                <div class="about-text-col reveal">
                     <p class="about-body">
                         I'm <strong style="color:#e4e4e7">Tho Panha</strong>, a junior Full-Stack &amp; Flutter
                         Developer
@@ -62,6 +67,10 @@ const stats = [
 </template>
 
 <style scoped>
+.reveal {
+    will-change: transform, opacity;
+}
+
 .about-section {
     position: relative;
     z-index: 10;

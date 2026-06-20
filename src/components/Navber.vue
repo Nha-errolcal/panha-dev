@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, type ComponentPublicInstance } from 'vue'
+import { ref, computed, watch, nextTick, onMounted, onUnmounted, type ComponentPublicInstance } from 'vue'
 import { useRouter } from 'vue-router'
 import { gsap } from 'gsap'
 import { X, Menu } from 'lucide-vue-next'
 import type { InterfaceNavberItem } from '../interfaces/index'
 import logo from '@/assets/logo.svg'
 
-defineProps<{
+const props = defineProps<{
     menuItems: InterfaceNavberItem[]
 }>()
 
@@ -15,25 +15,119 @@ const isScrolled = ref(false)
 const mobileOpen = ref(false)
 const navRef = ref<HTMLElement | null>(null)
 const logoRef = ref<HTMLElement | null>(null)
-const itemRefs = ref<HTMLElement[]>([])
+const navListRef = ref<HTMLElement | null>(null)
+const pillRef = ref<HTMLElement | null>(null)
+const itemEls = new Map<InterfaceNavberItem['id'], HTMLElement>()
 
-function setItemRef(el: Element | ComponentPublicInstance | null) {
-    if (el instanceof HTMLElement) itemRefs.value.push(el)
+function setItemRef(el: Element | ComponentPublicInstance | null, item: InterfaceNavberItem) {
+    if (el instanceof HTMLElement) itemEls.set(item.id, el)
 }
 
 function handleScroll() {
     isScrolled.value = window.scrollY > 20
 }
 
+const activeSection = ref('')
+const manualOverride = ref(false)
+let overrideTimer: ReturnType<typeof setTimeout> | undefined
+let observer: IntersectionObserver | null = null
+
+function matchRoute(route: string): boolean {
+    if (route.includes('#')) {
+        return activeSection.value === route.split('#')[1]
+    }
+    const path = route.split('#')[0] || '/'
+    return path === '/'
+        ? router.currentRoute.value.path === '/'
+        : router.currentRoute.value.path.startsWith(path)
+}
+
+function isActive(item: InterfaceNavberItem): boolean {
+    if (item.children?.length) return item.children.some(isActive)
+    return matchRoute(item.route)
+}
+
+function collectHashIds(items: InterfaceNavberItem[]): string[] {
+    const ids: string[] = []
+    for (const it of items) {
+        if (it.route.includes('#')) ids.push(it.route.split('#')[1])
+        if (it.children?.length) ids.push(...collectHashIds(it.children))
+    }
+    return ids
+}
+
+function setupScrollSpy() {
+    const ids = [...new Set(collectHashIds(props.menuItems))]
+    const sections = ids
+        .map((id) => document.getElementById(id))
+        .filter((el): el is HTMLElement => !!el)
+        .sort((a, b) => a.offsetTop - b.offsetTop)
+
+    if (!sections.length) return
+
+    const visible = new Set<string>()
+
+    observer = new IntersectionObserver(
+        (entries) => {
+            for (const entry of entries) {
+                if (entry.isIntersecting) visible.add(entry.target.id)
+                else visible.delete(entry.target.id)
+            }
+            if (manualOverride.value || !visible.size) return
+            const topMost = sections.find((s) => visible.has(s.id))
+            if (topMost) activeSection.value = topMost.id
+        },
+        { rootMargin: '-35% 0px -55% 0px', threshold: 0 },
+    )
+
+    sections.forEach((s) => observer!.observe(s))
+}
+
+function updatePill() {
+    if (!navListRef.value || !pillRef.value) return
+    const activeTop = props.menuItems.find(isActive)
+    if (!activeTop) {
+        gsap.to(pillRef.value, { opacity: 0, duration: .2 })
+        return
+    }
+    const el = itemEls.get(activeTop.id)
+    if (!el) return
+
+    const navRect = navListRef.value.getBoundingClientRect()
+    const elRect = el.getBoundingClientRect()
+    gsap.to(pillRef.value, {
+        x: elRect.left - navRect.left,
+        width: elRect.width,
+        opacity: 1,
+        duration: .45,
+        ease: 'power3.out',
+    })
+}
+
+let resizeTimer: ReturnType<typeof setTimeout> | undefined
+function onResize() {
+    clearTimeout(resizeTimer)
+    resizeTimer = setTimeout(updatePill, 150)
+}
+
+watch([activeSection, isScrolled, () => router.currentRoute.value.path], () => {
+    nextTick(updatePill)
+})
+
 function navigate(route: string) {
     mobileOpen.value = false
     const hash = route.includes('#') ? route.split('#')[1] : null
+
     if (hash) {
+        manualOverride.value = true
+        activeSection.value = hash
+        clearTimeout(overrideTimer)
+        overrideTimer = setTimeout(() => (manualOverride.value = false), 700)
+
         const el = document.getElementById(hash)
         if (el) {
             el.scrollIntoView({ behavior: 'smooth' })
         } else {
-            // navigate to home first then scroll
             router.push('/').then(() => {
                 setTimeout(() => {
                     document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth' })
@@ -47,15 +141,26 @@ function navigate(route: string) {
 
 onMounted(() => {
     window.addEventListener('scroll', handleScroll, { passive: true })
+    window.addEventListener('resize', onResize)
+
+    const initialHash = window.location.hash.replace('#', '')
+    if (initialHash) activeSection.value = initialHash
+
+    setupScrollSpy()
 
     const tl = gsap.timeline({ defaults: { ease: 'power3.out' } })
     tl.from(navRef.value, { y: -40, opacity: 0, duration: 0.5 })
         .from(logoRef.value, { x: -16, opacity: 0, duration: 0.4 }, '-=0.2')
-        .from(itemRefs.value, { opacity: 0, y: -10, stagger: 0.08, duration: 0.4 }, '-=0.25')
+        .from(Array.from(itemEls.values()), { opacity: 0, y: -10, stagger: 0.08, duration: 0.4 }, '-=0.25')
+        .add(() => updatePill())
 })
 
 onUnmounted(() => {
     window.removeEventListener('scroll', handleScroll)
+    window.removeEventListener('resize', onResize)
+    clearTimeout(overrideTimer)
+    clearTimeout(resizeTimer)
+    observer?.disconnect()
 })
 </script>
 
@@ -76,10 +181,19 @@ onUnmounted(() => {
 
                 <!-- Desktop nav -->
                 <nav class="hidden md:block" aria-label="Main navigation">
-                    <ul class="flex items-center space-x-1">
-                        <li v-for="item in menuItems" :key="item.id" :ref="setItemRef" class="relative group">
-                            <button @click="navigate(item.route)"
-                                class="flex items-center gap-2 text-sm font-medium px-3 py-2 rounded-lg text-zinc-400 hover:text-white hover:bg-white/5 transition-all duration-200">
+                    <ul ref="navListRef" class="relative flex items-center space-x-1">
+                        <!-- sliding active indicator -->
+                        <div ref="pillRef"
+                            class="absolute left-0 top-1 bottom-1 rounded-lg bg-white/10 opacity-0 pointer-events-none" />
+
+                        <li v-for="item in menuItems" :key="item.id" :ref="(el) => setItemRef(el, item)"
+                            class="relative group">
+                            <button @click="navigate(item.route)" :class="[
+                                'relative z-10 flex items-center gap-2 text-sm font-medium px-3 py-2 rounded-lg transition-all duration-200',
+                                isActive(item)
+                                    ? 'text-white'
+                                    : 'text-zinc-400 hover:text-white hover:bg-white/5',
+                            ]">
                                 <component :is="item.icon" class="w-4 h-4" />
                                 {{ item.title }}
                             </button>
@@ -89,8 +203,12 @@ onUnmounted(() => {
                                 class="absolute left-0 mt-1 w-48 rounded-xl shadow-xl bg-zinc-900 border border-zinc-800 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 origin-top-left">
                                 <div class="py-1.5 px-1.5">
                                     <button v-for="child in item.children" :key="child.id"
-                                        @click="navigate(child.route)"
-                                        class="w-full flex items-center gap-2 px-3 py-2 text-sm rounded-lg text-zinc-300 hover:bg-zinc-800 hover:text-white transition-colors duration-150">
+                                        @click="navigate(child.route)" :class="[
+                                            'w-full flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors duration-150',
+                                            isActive(child)
+                                                ? 'bg-zinc-800 text-white'
+                                                : 'text-zinc-300 hover:bg-zinc-800 hover:text-white',
+                                        ]">
                                         <component :is="child.icon" class="w-4 h-4" />
                                         {{ child.title }}
                                     </button>
@@ -141,8 +259,12 @@ onUnmounted(() => {
                     <nav class="flex-1 overflow-y-auto px-3 py-4">
                         <ul class="space-y-1">
                             <li v-for="item in menuItems" :key="item.id">
-                                <button @click="navigate(item.route)"
-                                    class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-zinc-400 hover:text-white hover:bg-white/5 transition-all duration-150">
+                                <button @click="navigate(item.route)" :class="[
+                                    'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150',
+                                    isActive(item)
+                                        ? 'text-white bg-white/10'
+                                        : 'text-zinc-400 hover:text-white hover:bg-white/5',
+                                ]">
                                     <component :is="item.icon" class="w-4 h-4 flex-shrink-0" />
                                     {{ item.title }}
                                 </button>
@@ -151,8 +273,12 @@ onUnmounted(() => {
                                 <ul v-if="item.children?.length"
                                     class="mt-1 ml-4 space-y-1 border-l border-zinc-800 pl-3">
                                     <li v-for="child in item.children" :key="child.id">
-                                        <button @click="navigate(child.route)"
-                                            class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-zinc-500 hover:text-white hover:bg-white/5 transition-all duration-150">
+                                        <button @click="navigate(child.route)" :class="[
+                                            'w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all duration-150',
+                                            isActive(child)
+                                                ? 'text-white bg-white/10'
+                                                : 'text-zinc-500 hover:text-white hover:bg-white/5',
+                                        ]">
                                             <component :is="child.icon" class="w-4 h-4 flex-shrink-0" />
                                             {{ child.title }}
                                         </button>

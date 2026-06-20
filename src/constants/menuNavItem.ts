@@ -14,7 +14,7 @@ const menuNavItem: InterfaceNavberItem[] = [
     {
         id: 1,
         title: 'Home',
-        route: '/#hero',
+        route: '/#home',
         icon: Home,
     },
     {

@@ -1,17 +1,21 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import testimonials from '../../../data/testimonials';
+import { useScrollReveal } from '../../../composables/useScrollReveal'
 
+const sectionRef = ref<HTMLElement | null>(null)
+useScrollReveal(sectionRef)
 </script>
 
 <template>
-    <section id="testimonials" class="testi-section">
+    <section id="testimonials" class="testi-section" ref="sectionRef">
         <div class="section-inner">
-            <p class="section-eyebrow center">What people say</p>
-            <h2 class="section-title center">Kind <span class="text-blue">Words</span></h2>
-            <p class="section-sub center">From collaborators and clients I've had the pleasure to work with.</p>
+            <p class="section-eyebrow center reveal">What people say</p>
+            <h2 class="section-title center reveal">Kind <span class="text-blue">Words</span></h2>
+            <p class="section-sub center reveal">From collaborators and clients I've had the pleasure to work with.</p>
 
             <div class="testi-grid">
-                <article v-for="t in testimonials" :key="t.name" class="testi-card">
+                <article v-for="t in testimonials" :key="t.name" class="testi-card reveal">
                     <div class="testi-stars">
                         <span v-for="i in t.stars" :key="i" class="star">★</span>
                     </div>
@@ -31,6 +35,10 @@ import testimonials from '../../../data/testimonials';
 </template>
 
 <style scoped>
+.reveal {
+    will-change: transform, opacity;
+}
+
 .testi-section {
     position: relative;
     z-index: 10;

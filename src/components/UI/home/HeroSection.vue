@@ -20,8 +20,7 @@ function onMouseLeave() {
 </script>
 
 <template>
-    <section class="hero-inner">
-        <!-- Left: text -->
+    <section class="hero-inner" id="home">
         <div class="hero-left">
             <span class="badge animate-badge">
                 <span class="dot" />

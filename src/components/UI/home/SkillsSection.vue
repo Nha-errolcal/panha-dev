@@ -1,18 +1,23 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import skillGroups from '../../../data/skills'
+import { useScrollReveal } from '../../../composables/useScrollReveal'
+
+const sectionRef = ref<HTMLElement | null>(null)
+useScrollReveal(sectionRef)
 </script>
 
 <template>
-    <section id="skills" class="skills-section">
+    <section id="skills" class="skills-section" ref="sectionRef">
         <div class="section-inner">
-            <p class="section-eyebrow center">What I use</p>
-            <h2 class="section-title center">Tech <span class="text-blue">Stack</span></h2>
-            <p class="section-sub center">
+            <p class="section-eyebrow center reveal">What I use</p>
+            <h2 class="section-title center reveal">Tech <span class="text-blue">Stack</span></h2>
+            <p class="section-sub center reveal">
                 Tools and technologies I reach for to build fast, reliable products.
             </p>
 
             <div class="skill-groups">
-                <div v-for="group in skillGroups" :key="group.category" class="skill-group">
+                <div v-for="group in skillGroups" :key="group.category" class="skill-group reveal">
                     <div class="skill-group-header">
                         <span class="skill-group-dot" :style="{ background: group.color }" />
                         <span class="skill-group-title">{{ group.category }}</span>
@@ -34,6 +39,10 @@ import skillGroups from '../../../data/skills'
 </template>
 
 <style scoped>
+.reveal {
+    will-change: transform, opacity;
+}
+
 .skills-section {
     position: relative;
     z-index: 10;

@@ -1,19 +1,23 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import projects from '../../../data/project';
+import { useScrollReveal } from '../../../composables/useScrollReveal'
 
+const sectionRef = ref<HTMLElement | null>(null)
+useScrollReveal(sectionRef)
 </script>
 
 <template>
-    <section id="projects" class="projects-section">
+    <section id="projects" class="projects-section" ref="sectionRef">
         <div class="section-inner">
-            <p class="section-eyebrow">What I've built</p>
-            <h2 class="section-title">Featured <span class="text-blue">Projects</span></h2>
-            <p class="section-sub">
+            <p class="section-eyebrow reveal">What I've built</p>
+            <h2 class="section-title reveal">Featured <span class="text-blue">Projects</span></h2>
+            <p class="section-sub reveal">
                 A selection of real products I've designed, built, and shipped.
             </p>
 
             <div class="projects-grid">
-                <article v-for="project in projects" :key="project.title" class="project-card">
+                <article v-for="project in projects" :key="project.title" class="project-card reveal">
                     <div class="project-accent" :style="{ background: project.color }" />
                     <div class="project-body">
                         <h3 class="project-title">{{ project.title }}</h3>
@@ -42,6 +46,10 @@ import projects from '../../../data/project';
 </template>
 
 <style scoped>
+.reveal {
+    will-change: transform, opacity;
+}
+
 .projects-section {
     position: relative;
     z-index: 10;

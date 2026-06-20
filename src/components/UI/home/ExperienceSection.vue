@@ -1,15 +1,20 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import { experienceList } from '../../../data/education'
+import { useScrollReveal } from '../../../composables/useScrollReveal'
+
+const sectionRef = ref<HTMLElement | null>(null)
+useScrollReveal(sectionRef, { y: 24, stagger: 0.15 })
 </script>
 
 <template>
-    <section id="experience" class="exp-section">
+    <section id="experience" class="exp-section" ref="sectionRef">
         <div class="section-inner">
-            <p class="section-eyebrow">Experience</p>
-            <h2 class="section-title">Work <span class="text-blue">History</span></h2>
+            <p class="section-eyebrow reveal">Experience</p>
+            <h2 class="section-title reveal">Work <span class="text-blue">History</span></h2>
 
             <div class="timeline">
-                <div v-for="(exp, i) in experienceList" :key="i" class="timeline-item">
+                <div v-for="(exp, i) in experienceList" :key="i" class="timeline-item reveal">
                     <div class="timeline-track">
                         <div class="timeline-icon-wrap">
                             <img :src="exp.icon" :alt="exp.role" class="timeline-icon" loading="lazy" />
@@ -31,6 +36,10 @@ import { experienceList } from '../../../data/education'
 </template>
 
 <style scoped>
+.reveal {
+    will-change: transform, opacity;
+}
+
 .exp-section {
     position: relative;
     z-index: 10;

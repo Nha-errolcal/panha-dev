@@ -1,15 +1,20 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import { educationList } from '../../../data/education'
+import { useScrollReveal } from '../../../composables/useScrollReveal'
+
+const sectionRef = ref<HTMLElement | null>(null)
+useScrollReveal(sectionRef, { y: 24, stagger: 0.15 })
 </script>
 
 <template>
-    <section id="education" class="edu-section">
+    <section id="education" class="edu-section" ref="sectionRef">
         <div class="section-inner">
-            <p class="section-eyebrow">Education</p>
-            <h2 class="section-title">Academic <span class="text-blue">Background</span></h2>
+            <p class="section-eyebrow reveal">Education</p>
+            <h2 class="section-title reveal">Academic <span class="text-blue">Background</span></h2>
 
             <div class="timeline">
-                <div v-for="(edu, i) in educationList" :key="i" class="timeline-item">
+                <div v-for="(edu, i) in educationList" :key="i" class="timeline-item reveal">
                     <div class="timeline-track">
                         <div class="timeline-icon-wrap">
                             <img :src="edu.icon" :alt="edu.institution" class="timeline-icon" loading="lazy" />
@@ -29,6 +34,10 @@ import { educationList } from '../../../data/education'
 </template>
 
 <style scoped>
+.reveal {
+    will-change: transform, opacity;
+}
+
 .edu-section {
     position: relative;
     z-index: 10;
