@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import type { RouteRecordRaw } from 'vue-router';
 
-// Define your routes with the RouteRecordRaw type
 const routes: Array<RouteRecordRaw> = [
     {
         path: '/',
@@ -11,23 +10,16 @@ const routes: Array<RouteRecordRaw> = [
             layout: 'MasterLayout'
         }
     },
-    // {
-    //     path: '/dashboard',
-    //     name: 'Dashboard',
-    //     component: () => import('../views/DashboardView.vue'),
-    //     meta: {
-    //         layout: 'MasterLayout'
-    //     }
-    // },
-    // {
-    //     // Catch-all route for 404 Not Found pages
-    //     path: '/:pathMatch(.*)*',
-    //     name: 'NotFound',
-    //     component: () => import('../views/NotFoundView.vue'),
-    //     meta: {
-    //         layout: 'ErrorLayout'
-    //     }
-    // }
+
+    {
+        path: '/:pathMatch(.*)*',
+        name: 'NotFound',
+        // @ts-ignore: Allow importing the Vue SFC without a declaration file
+        component: () => import('../../app/page/NotFound.vue'),
+        meta: {
+            layout: 'EmptyLayout'
+        }
+    }
 ];
 
 const router = createRouter({

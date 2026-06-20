@@ -175,8 +175,8 @@ function onCardMove(e: MouseEvent) {
                                 </svg>
                             </span>
                             <span class="info-link-text">
-                                <span class="info-link-label">Portfolio</span>
-                                <span class="info-link-value">View live site</span>
+                                <span class="info-link-label">LinkIn</span>
+                                <span class="info-link-value">View my profile</span>
                             </span>
                             <span class="info-link-action">
                                 <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor"
