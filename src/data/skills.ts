@@ -16,9 +16,10 @@ const skillGroups: SkillGroup[] = [
         skills: [
             { name: 'Vue JS', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vuejs/vuejs-original.svg' },
             { name: 'Nuxt JS', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nuxtjs/nuxtjs-original.svg' },
-            { name: 'Angular JS', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Angular_gradient_logo.png/500px-Angular_gradient_logo.png' },
+            { name: 'Angular', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Angular_gradient_logo.png/500px-Angular_gradient_logo.png' },
             { name: 'React JS', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg' },
             { name: 'Next.js', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original.svg' },
+            { name: 'Flutter', logo: 'https://cdn.iconscout.com/icon/free/png-256/free-flutter-logo-icon-svg-download-png-1720090.png?f=webp' },
         ],
     },
     {
@@ -65,6 +66,48 @@ const skillGroups: SkillGroup[] = [
         skills: [
             { name: 'GitHub', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg' },
             { name: 'GitLab', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/gitlab/gitlab-original.svg' },
+        ],
+    },
+    {
+        category: 'Testing',
+        color: '#ef4444',
+        skills: [
+            { name: 'Jest', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/jest/jest-plain.svg' },
+            // { name: 'JUnit', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg' },
+            // { name: 'Postman Testing', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postman/postman-original.svg' },
+            { name: 'Flutter Test', logo: 'https://cdn.iconscout.com/icon/free/png-256/free-flutter-logo-icon-svg-download-png-1720090.png?f=webp' },
+        ],
+    },
+    {
+        category: 'CI/CD',
+        color: '#ec4899',
+        skills: [
+            { name: 'GitHub Actions', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg' },
+            { name: 'Jenkins', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/jenkins/jenkins-original.svg' },
+            { name: 'GitLab CI/CD', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/gitlab/gitlab-original.svg' },
+            { name: 'Docker', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg' },
+        ],
+    },
+    {
+        category: 'Server & Deployment',
+        color: '#14b8a6',
+        skills: [
+            {
+                name: 'Linux (Ubuntu)',
+                logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/ubuntu/ubuntu-plain.svg',
+            },
+            {
+                name: 'Nginx',
+                logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nginx/nginx-original.svg',
+            },
+            {
+                name: 'Docker',
+                logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg',
+            },
+            {
+                name: 'PM2',
+                logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg',
+            },
         ],
     },
 ]
