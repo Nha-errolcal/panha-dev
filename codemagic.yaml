@@ -1,3 +1,32 @@
+workflows:
+  ios-workflow:
+    name: iOS Vue Build
+    max_build_duration: 60
 
+    environment:
+      node: 18
 
+    scripts:
+      - name: Install dependencies
+        script: npm install
 
+      - name: Build Vue project
+        script: npm run build
+
+      - name: Install Capacitor
+        script: npm install @capacitor/core @capacitor/cli
+
+      - name: Add iOS platform (only first time)
+        script: npx cap add ios || true
+
+      - name: Sync Capacitor
+        script: npx cap sync ios
+
+    artifacts:
+      - ios/App/build/outputs/**/*.ipa
+      - ios/App/build/**/*.xcarchive
+
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
