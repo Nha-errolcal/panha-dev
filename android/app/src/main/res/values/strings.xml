@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">PanhaProfile</string>
+    <string name="title_activity_main">PanhaProfile</string>
+    <string name="package_name">com.panhadev.teamyearng.app</string>
+    <string name="custom_url_scheme">com.panhadev.teamyearng.app</string>
+</resources>
